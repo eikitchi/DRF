@@ -27,6 +27,7 @@ class Lesson(models.Model):
     class Meta:
         verbose_name = "Урок"
         verbose_name_plural = "Уроки"
+        ordering = ('name',)
 
     def __str__(self):
         return f'{self.name}'
@@ -50,6 +51,7 @@ class Payments(models.Model):
     class Meta:
         verbose_name = 'Платеж'
         verbose_name_plural = 'Платежи'
+        ordering = ('payment_date',)
 
     def __str__(self):
         return f"{self.user} - {self.payment_date}"
