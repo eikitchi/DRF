@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
+import os
 from datetime import timedelta
 from pathlib import Path
 
@@ -43,6 +44,8 @@ INSTALLED_APPS = [
     'course',
     'django_filters',
     'rest_framework_simplejwt',
+    'drf_yasg',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -132,6 +135,13 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+EMAIL_HOST = 'smtp.yandex.com'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")      # берет из .env
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")      # берет из .env
+EMAIL_USE_TLS = False            # у gmail наоборот True
+EMAIL_USE_SSL = True             # у gmail наоборот False
+
 AUTH_USER_MODEL = 'users.User'
 
 REST_FRAMEWORK = {
@@ -140,7 +150,8 @@ REST_FRAMEWORK = {
     ],
 }
 
+# настройка срока действия токенов
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=1500),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=100),
 }
