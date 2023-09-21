@@ -3,10 +3,6 @@ from course.models import Course, Lesson, Payments, SubscriptionCourse
 from course.validators import UrlValidator
 
 
-# class LessonCourseSerializers(serializers.ModelSerializer):
-#     class Meta:
-#         model = Lesson
-#         fields = ['id', 'name', 'description', 'preview', 'url_video', 'course']
 class LessonSerializers(serializers.ModelSerializer):
     class Meta:
         model = Lesson

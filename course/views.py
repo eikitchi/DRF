@@ -16,15 +16,52 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 class CourseViewSet(viewsets.ModelViewSet):
+    """
+    Обзор курсов и их редактирование.
+
+    list:
+    Получает список всех курсов.
+
+    create:
+    Создает новый курс.
+
+    retrieve:
+    Получает информацию о курсе по его ID.
+
+    update:
+    Обновляет информацию о курсе по его ID.
+
+    partial_update:
+    Обновляет часть информации о курсе по его ID.
+
+    destroy:
+    Удаляет курс по его ID.
+    """
+
     serializer_class = CourseSerializers
     queryset = Course.objects.all()
     permission_classes = [IsAuthenticated]
     pagination_class = LessonPaginator
 
     def perform_create(self, serializer) -> None:
+        """
+        Сохраняет новому объекту владельца.
+
+        Args:
+            serializer: Сериализатор для создания курса.
+
+        Returns:
+            None
+        """
         serializer.save(user=self.request.user)  # Сохраняет новому объекту владельца
 
     def get_queryset(self):
+        """
+        Получает запрос курсов в зависимости от роли пользователя.
+
+        Returns:
+            Queryset: Запрос курсов.
+        """
         user = self.request.user
         if user.is_staff or user.is_superuser or user.role == UserRoles.MODERATOR:
             return Course.objects.all()
@@ -32,24 +69,26 @@ class CourseViewSet(viewsets.ModelViewSet):
             return Course.objects.filter(owner=user)
 
 
-# class CourseCreateAPIView(generics.CreateAPIView):
-#     serializer_class = CourseSerializers
-#     queryset = Course.objects.all()
-# permission_classes = [IsAuthenticated, IsModerator]
-#
-# def get_queryset(self):
-#     user = self.request.user
-#     if user.is_superuser:
-#         return Course.objects.all()
-#     else:
-#         return Course.objects.filter(owner=user)
 class LessonListView(generics.ListAPIView):
+    """
+    Получение списка уроков.
+
+    list:
+    Получает список всех уроков.
+    """
+
     serializer_class = LessonSerializers
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated]
     pagination_class = LessonPaginator
 
     def get_queryset(self):
+        """
+        Получает запрос уроков в зависимости от роли пользователя.
+
+        Returns:
+            Queryset: Запрос уроков.
+        """
         user = self.request.user
         if user.is_staff or user.is_superuser or user.role == UserRoles.MODERATOR:
             return Lesson.objects.all()
@@ -58,13 +97,23 @@ class LessonListView(generics.ListAPIView):
 
 
 class LessonCreateAPIView(generics.CreateAPIView):
+    """
+    Создание нового урока.
+
+    create:
+    Создает новый урок.
+    """
+
     serializer_class = LessonSerializers
     queryset = Lesson.objects.all()
 
-    # permission_classes = [IsAuthenticated]  # , IsOwner]
-
-    #
     def get_queryset(self):
+        """
+        Получает запрос уроков в зависимости от роли пользователя.
+
+        Returns:
+            Queryset: Запрос уроков.
+        """
         user = self.request.user
         if user.is_superuser:
             return Lesson.objects.all()
@@ -73,12 +122,24 @@ class LessonCreateAPIView(generics.CreateAPIView):
 
 
 class LessonDetailView(generics.RetrieveAPIView):
+    """
+    Получение информации об уроке.
+
+    retrieve:
+    Получает информацию об уроке по его ID.
+    """
+
     serializer_class = LessonSerializers
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated]
 
-    #
     def get_queryset(self):
+        """
+        Получает запрос уроков в зависимости от роли пользователя.
+
+        Returns:
+            Queryset: Запрос уроков.
+        """
         user = self.request.user
         if user.is_staff or user.is_superuser or user.role == UserRoles.MODERATOR:
             return Lesson.objects.all()
@@ -87,12 +148,24 @@ class LessonDetailView(generics.RetrieveAPIView):
 
 
 class LessonUpdateView(generics.UpdateAPIView):
+    """
+    Обновление информации об уроке.
+
+    update:
+    Обновляет информацию об уроке по его ID.
+    """
+
     serializer_class = LessonSerializers
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated]
 
-    #
     def get_queryset(self):
+        """
+        Получает запрос уроков в зависимости от роли пользователя.
+
+        Returns:
+            Queryset: Запрос уроков.
+        """
         user = self.request.user
         if user.is_staff or user.is_superuser or user.role == UserRoles.MODERATOR:
             return Lesson.objects.all()
@@ -101,12 +174,24 @@ class LessonUpdateView(generics.UpdateAPIView):
 
 
 class LessonDeleteView(generics.DestroyAPIView):
+    """
+    Удаление урока.
+
+    destroy:
+    Удаляет урок по его ID.
+    """
+
     serializer_class = LessonSerializers
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated]  # , IsOwner]
 
-    #
     def get_queryset(self):
+        """
+        Получает запрос уроков в зависимости от роли пользователя.
+
+        Returns:
+            Queryset: Запрос уроков.
+        """
         user = self.request.user
         if user.is_superuser:
             return Lesson.objects.all()
@@ -115,6 +200,13 @@ class LessonDeleteView(generics.DestroyAPIView):
 
 
 class PaymentsListView(generics.ListAPIView):
+    """
+    Получение списка платежей.
+
+    list:
+    Получает список всех платежей.
+    """
+
     serializer_class = PaymentsSerializers
     queryset = Payments.objects.all()
     filter_backends = [DjangoFilterBackend, OrderingFilter]
@@ -124,25 +216,40 @@ class PaymentsListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
 
-"""Фильтрация для эндпоинтов вывода списка платежей с возможностями:
-менять порядок сортировки по дате оплаты,
-фильтровать по курсу или уроку,
-фильтровать по способу оплаты."""
-
-
 class SubscriptionCreateAPIView(generics.CreateAPIView):
+    """
+    Создание подписки на курс.
+
+    create:
+    Создает новую подписку на курс.
+    """
+
     serializer_class = SubscriptionCourseSerialisers
     queryset = SubscriptionCourse.objects.all()
     permission_classes = [IsAuthenticated]
 
 
 class SubscriptionUpdateView(generics.UpdateAPIView):
+    """
+    Обновление информации о подписке на курс.
+
+    update:
+    Обновляет информацию о подписке на курс по его ID.
+    """
+
     serializer_class = SubscriptionCourseSerialisers
     queryset = SubscriptionCourse.objects.all()
     permission_classes = [IsAuthenticated]
 
 
 class PaymentCreateView(generics.CreateAPIView):
+    """
+    Создание нового платежа.
+
+    create:
+    Создает новый платеж.
+    """
+
     serializer_class = PaymentCreateSerializers
     queryset = Payments.objects.all()
     permission_classes = [IsAuthenticated]
@@ -161,24 +268,14 @@ class PaymentCreateView(generics.CreateAPIView):
 
 
 class GetPaymentView(APIView):
-    """Получение информации о платеже"""
+    """
+    Получение информации о платеже.
+
+    get:
+    Получает информацию о платеже по его ID.
+    """
 
     def get(self, request, payment_id):
         payment_intent = stripe.PaymentIntent.retrieve(payment_id)
         return Response({
             'status': payment_intent.status, })
-
-# class PaymentConfirm(generics.RetrieveAPIView):
-#     queryset = Payments.objects.all()
-#     serializer_class = PaymentsSerializers
-#
-#     def retrieve(self, request, *args, **kwargs):
-#         instance = self.get_object()
-#
-#         intent = StripeApi()
-#
-#         instance.status = intent.confirm_intent(
-#             instance.stripe_id)  # вызов метода по подтверждению платежа и обновление статуса платежа в бд
-#         instance.save()
-#         serializer = self.get_serializer(instance)
-#         return Response(serializer.data)
