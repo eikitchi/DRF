@@ -5,7 +5,7 @@ from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from tasks import send_updated_email
 from course.paginators import LessonPaginator
 from course.serializers.serializers import *
 from course.services import create_payment, checkout_session
@@ -54,6 +54,11 @@ class CourseViewSet(viewsets.ModelViewSet):
             None
         """
         serializer.save(user=self.request.user)  # Сохраняет новому объекту владельца
+
+    def update(self, request, *args, **kwargs):
+        send_updated_email.delay(kwargs['pk'])
+
+        return super().update(request, *args, **kwargs)
 
     def get_queryset(self):
         """
