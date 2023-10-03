@@ -17,39 +17,53 @@
 
 Клонирование проекта:
 ```
-git clone https://github.com/
+git clone <URL_РЕПОЗИТОРИЯ>
+cd <ПАПКА_РЕПОЗИТОРИЯ>
+
 ```
-Запуск:
+Настройка переменных окружения:
 
-Для запуска проекта необходимо создать .env в директории ..
-скопировать в него содержимое файла  .env.example 
+Создайте файл .env в корневой директории проекта и заполните необходимые переменные окружения. Пример:
 
-Запустить команду, указанную ниже из директории ...
+```
+DEBUG=True
+SECRET_KEY=mysecretkey
+DATABASE_URL=postgres://user:password@db:5432/db_name
+```
+
+Запуск контейнеров
+
+Запустите Docker Compose для сборки и запуска контейнеров:
 ```
 docker-compose up -d --build
 ```
+Применение миграций
+После запуска контейнеров, примените миграции:
+```
+docker-compose exec app bash -c "python manage.py migrate"
+```
+Создание суперпользователя
+Если нужно, создайте суперпользователя:
+```
+docker-compose exec app bash -c "python manage.py createsuperuser"
+```
+Статические файлы
 
-Пример использования:
-
-1. Создать суперпользователя для использования Admin-панели.
-Для этого необходимо:
+Соберите статические файлы (если нужно):
 ```
-docker ps
+docker-compose exec app bash -c "python manage.py collectstatic --noinput"
 ```
-После выполнения команды в консоль выведется список заупщенных контейнеров.
-Необходимо скопировать id контейнера backend.
-Далее вводим команду:
+Запуск Celery
 ```
-docker exec -it <id контейнера> bash
+docker-compose exec app bash -c "celery -A config.celery worker --loglevel=info"
 ```
-Попадаем в наш контейнер и создаем суперпользователя
+и
 ```
-python manage.py createsuperuser
+docker-compose exec app bash -c "celery -A config.celery beat --loglevel=info"
 ```
-Вводим данные и выходим из контейнера
 
 
-2. Заходим в панель админимстратора, вводим данные нашего пользователя
+### Заходим в панель админимстратора, вводим данные нашего пользователя
 ```
 http://localhost/admin/
 ```
