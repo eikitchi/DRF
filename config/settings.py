@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'drf_yasg',
     'corsheaders',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -86,11 +87,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv("NAME_POSTGRES"),
-        'USER': os.getenv('USER_POSTGRES'),
-        'PASSWORD': os.getenv('PASSWORD_POSTGRES'),
-        'PORT': os.getenv('PORT_POSTGRES'),
-        'HOST': os.getenv('HOST_POSTGRES'),
+        'NAME': os.getenv("POSTGRES_DB"),
+        # 'HOST': os.getenv('POSTGRES_HOST'),
+        'USER': os.getenv('POSTGRES_USER'),
+        'HOST': 'db',
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+        'PORT': os.getenv('DB_PORT')
 
     }
 }
